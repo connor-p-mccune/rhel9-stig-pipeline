@@ -1,0 +1,10 @@
+# Scripts and config files in this repo run on Linux. Linux breaks on Windows
+# line endings (you'd see errors like "bash\r: No such file or directory").
+# These rules make Git always store and check out these files with Linux line
+# endings, even when they're committed from a Windows laptop.
+*.sh    text eol=lf
+*.py    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.cfg   text eol=lf
+*.hcl   text eol=lf
