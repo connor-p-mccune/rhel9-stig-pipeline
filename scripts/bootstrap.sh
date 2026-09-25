@@ -50,7 +50,11 @@ STIG_RELEASE="$(oscap info --profile "$STIG_PROFILE" "$DATASTREAM" 2>/dev/null |
 echo "DISA STIG release:   ${STIG_RELEASE:-not found in profile description}"
 echo
 echo "Ansible collections:"
-ansible-galaxy collection list ansible.posix community.general 2>/dev/null || true
+# `collection list` only accepts one name at a time, so check each separately.
+for collection in ansible.posix community.general; do
+  ansible-galaxy collection list "$collection" 2>/dev/null | grep "^$collection " \
+    || echo "$collection: NOT FOUND (re-run this script)"
+done
 
 cat << 'NOTE'
 
