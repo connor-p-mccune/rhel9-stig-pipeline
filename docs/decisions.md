@@ -17,5 +17,6 @@ Recorded 2026-09-25 from `scripts/bootstrap.sh` on the test server.
 - DISA STIG release (from the SSG `stig` profile description): V2R9
 - OpenSCAP: 1.3.14
 - ansible-core: 2.14.18
+- Ansible collections: ansible.posix 1.6.2, community.general 9.5.13
 
 Reason: DISA updates the STIG every quarter, and Red Hat ships new scap-security-guide content to match. The same server can score differently against different content, so every score in `reports/` is only meaningful next to the versions that produced it. If any of these change (for example after a `dnf update`), re-run the baseline scan and record the new versions here.

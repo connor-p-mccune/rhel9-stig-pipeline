@@ -119,13 +119,13 @@ def main():
     columns = OUTCOMES + ["other", "total"]
     header_names = {"notchecked": "notchecked(!)"}
     # Narrow columns for short words, wider ones for long words, so the table
-    # fits in an 80-character terminal window.
-    widths = {"notapplicable": 15, "notchecked": 15}
+    # fits in a narrow terminal window without wrapping.
+    widths = {"notapplicable": 14, "notchecked": 14}
 
     def w(col):
-        return widths.get(col, 8)
+        return widths.get(col, 7)
 
-    line_width = 10 + sum(w(c) for c in columns)
+    line_width = 9 + sum(w(c) for c in columns)
     print("=" * line_width)
     print(f" STIG scan summary: {label}")
     print("=" * line_width)
@@ -137,7 +137,7 @@ def main():
         print("Score:           not found in results file")
     print()
 
-    header = "".ljust(10) + "".join(header_names.get(c, c).rjust(w(c)) for c in columns)
+    header = "".ljust(9) + "".join(header_names.get(c, c).rjust(w(c)) for c in columns)
     print(header)
     print("-" * len(header))
     for row_name, row in [(c, counts[c]) for c in categories] + [("Total", totals)]:
@@ -146,7 +146,7 @@ def main():
             value = sum(row.values()) if col == "total" else row[col]
             cell = str(value).rjust(w(col))
             cells.append(yellow(cell) if col == "notchecked" else cell)
-        print(row_name.ljust(10) + "".join(cells))
+        print(row_name.ljust(9) + "".join(cells))
     print()
     print(yellow(f"(!) {NOTCHECKED_NOTE}"))
     print(f"    ({notselected} rule(s) outside this profile were skipped and are not counted.)")
