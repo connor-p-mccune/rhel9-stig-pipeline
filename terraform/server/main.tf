@@ -55,18 +55,38 @@ provider "aws" {
 }
 
 # -----------------------------------------------------------------------------
-# Find the newest official RHEL 9 image.
-# owners = ["309956199498"] is Red Hat's own AWS account ID. Pinning to it means
-# we can never accidentally launch some stranger's "RHEL-flavored" image that
-# happens to match the name pattern.
+# Which RHEL 9 image to build the server from, pinned to one exact image.
+#
+# Why pinned: this used to match ANY RHEL 9 image ("RHEL-9.*") and take the
+# newest one. Red Hat keeps refreshing images for older 9.x releases too, so
+# "newest" flipped from a RHEL 9.8 image to a freshly rebuilt RHEL 9.6 one.
+# Terraform saw a different image and REPLACED the server (destroyed it and
+# built a new one) on an ordinary `terraform apply`. Every score in reports/
+# is only comparable on the same starting image, so the image is now fixed.
+# To move to a newer image on purpose: change this value, re-run the baseline
+# scan, and record the change in docs/decisions.md.
+# -----------------------------------------------------------------------------
+variable "rhel_ami_name" {
+  description = "Exact name of the Red Hat RHEL 9 image to launch. Pinned so the server never changes underneath the scan results."
+  type        = string
+  default     = "RHEL-9.8.0_HVM-20260908-x86_64-0-Hourly2-GP3"
+}
+
+# -----------------------------------------------------------------------------
+# Look up that image's ID.
+# owners = ["309956199498"] is Red Hat's own AWS account ID, so we can never
+# accidentally launch some stranger's image that happens to have the same name.
+# include_deprecated = true: Red Hat marks older images "deprecated" over time,
+# which hides them from normal lookups. We still want this exact one.
 # -----------------------------------------------------------------------------
 data "aws_ami" "rhel9" {
-  most_recent = true
-  owners      = ["309956199498"]
+  most_recent        = true
+  owners             = ["309956199498"]
+  include_deprecated = true
 
   filter {
     name   = "name"
-    values = ["RHEL-9.*_HVM-*-x86_64-*-Hourly*"]
+    values = [var.rhel_ami_name]
   }
 
   filter {
